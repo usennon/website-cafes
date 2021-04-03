@@ -5,7 +5,13 @@ from flask_login import LoginManager, UserMixin, login_user, current_user
 from forms import LoginForm, RegisterForm, AddCafeForm, CafeSuggestForm
 from flask_bootstrap import Bootstrap
 from functools import wraps
-from email_sender import send_email
+from dotenv import load_dotenv
+import os
+import smtplib
+
+dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
+if os.path.exists(dotenv_path):
+    load_dotenv(dotenv_path)
 
 app = Flask(__name__)
 Bootstrap(app)
@@ -13,7 +19,7 @@ Bootstrap(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 
-app.config['SECRET_KEY'] = 'fsdsfddfsfafaqwebgmjgd'
+app.config['SECRET_KEY'] = os.getenv(key='TOKEN')
 ##Connect to Database
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///cafes.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -58,6 +64,19 @@ class User(UserMixin, db.Model):
 
 
 db.create_all()
+
+
+def send_email(name, map_url, location, cafe_site=None):
+    email_from = 'progmvl@gmail.com'
+    password = os.getenv(key='PASSWORD')
+    with smtplib.SMTP('smtp.gmail.com') as connection:
+        connection.starttls()
+        connection.login(user=email_from, password=password)
+        connection.sendmail(from_addr=email_from,
+                            to_addrs='usennon@mail.ru',
+                            msg=f'New Cafe Suggestion\n\nCafe name:'
+                                f'{name}\nCafe map:{map_url}\nLocation: {location}'
+                                f'\nSite: {cafe_site}')
 
 
 @app.route('/', methods=['GET', 'POST'])
