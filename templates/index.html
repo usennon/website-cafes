@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+{% if not current_user.is_authenticated %}
+    <a href="{{ url_for('register') }}">Registration</a>
+    <a href="{{ url_for('login') }}">Login</a>
+{% else %}
+    <a href="">Logout</a>
+{% endif %}
+{% if current_user.id == 1 %}
+    <h3><a href="{{ url_for('add_cafe') }}">Add cafe</a> </h3>
+{% endif %}
+    <a href="{{ url_for('suggest_cafe') }}"><h2>Suggest cafe</h2></a>
+    {% for cafe in cafes %}
+        <a href="{{ url_for('cafe_page', index=cafe.id) }}"> <h2>{{ cafe.name }}</h2></a>
+        <p>{{ cafe.location }}</p>
+        {% if current_user.id == 1 %}
+        <a href="{{ url_for('delete_cafe', index=cafe.id) }}"><p>delete</p></a>
+        {% endif %}
+        <br>
+    {% endfor %}
+
+    <form action="{{ url_for('main_page') }}" method="POST">
+      <div>
+        <button value="has_wifi" name="wifi" type="submit">Wifi</button>
+      </div>
+        <div>
+        <button value="toilets" name="toilet" type="submit">Toilets</button>
+      </div>
+        <div>
+        <button value="sockets" name="sockets" type="submit">Sockets</button>
+      </div>
+        <div>
+        <button value="calls" name="calls" type="submit">Calls</button>
+      </div>
+        <div>
+        <button value="all" name="all" type="submit">All</button>
+      </div>
+    </form>
+</body>
+</html>
